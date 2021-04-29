@@ -1,0 +1,45 @@
+﻿style
+  .stage
+    border: 3px solid #ccc
+
+  .selector
+    border: 3px solid #fcc
+
+  .a
+    border: 1px solid
+
+  .b
+    border: 1px solid
+
+  .c
+    border: 1px solid
+
+  .d
+    border: 1px solid
+
+  .separator
+    border: 1px solid
+
+  .friend
+    border: 1px solid
+
+  .peoles
+    border: 1px solid
+
+  .half
+    border: 1px solid
+
+body
+  e .stage #dark
+  e .stage #intro
+  e .stage #rules
+  e .stage #que-1
+  e .stage .selector #que-1-ans
+     e .a
+     e .b
+     e .c
+     e .d
+     e .separator
+     e .friend
+     e .peoles
+     e .half
