@@ -13,3 +13,4 @@ d-coder-ui-sample-test-*
 *.o
 *.obj
 *.lst
+mixins.d
