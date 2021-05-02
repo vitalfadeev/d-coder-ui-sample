@@ -4,13 +4,16 @@
     "copyright"   : "Copyright © 2021, Vital Radeev",
     "description" : "D UI sample",
     "license"     : "GPL",
-    "dflags"      : [ "-mixin=mixins.d" ],
     "targetPath"  : "bin",
     "targetName"  : "d-coder-ui-sample",
     "targetType"  : "executable",
-    "libs"        : [ "deps/d-coder-ui/lib/ui" ],
     "dependencies":
     {
         "d-coder-ui" : { "path" : "deps/d-coder-ui" }
     },
+    "preGenerateCommands":
+    [
+        "start /wait deps/d-coder-ui-tools/bin/t-convertor.exe"
+    ],
+    "dflags"      : [ "-mixin=mixins.d" ]
  }

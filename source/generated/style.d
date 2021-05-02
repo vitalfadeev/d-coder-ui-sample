@@ -3,63 +3,57 @@ module generated.style;
 
 import ui;
 
-// stage;
 struct stage
 {
-    Element* element;
-    alias    element this;
-    string   className = "stage";
+    string name = "stage";
     
-    void setter()
+    static
+    void setter( Element* element )
     {
-        // borderTopWidth         = (1.000000).px;
-        // borderRightWidth       = (1.000000).px;
-        // borderBottomWidth      = (1.000000).px;
-        // borderLeftWidth        = (1.000000).px;
-        // borderTopLeftWidth     = (1.000000).px;
-        // borderTopRightWidth    = (1.000000).px;
-        // borderBottomLeftWidth  = (1.000000).px;
-        // borderBottomRightWidth = (1.000000).px;
+        with ( element.computed )
+        {
+            borderWidth = (3.000000).px;
+            borderStyle = LineStyle.solid;
+            borderColor = Color( 0x0, 0x30, 0x0 );
+            width = (100.000000).px;
+            height = (100.000000).px;
+        }
     }
 }
 
-// dark;
 struct dark
 {
-    Element* element;
-    alias    element this;
-    string   className = "dark";
+    string name = "dark";
     
-    void setter()
+    static
+    void setter( Element* element )
     {
-        // borderTopWidth         = (2.000000).px;
-        // borderRightWidth       = (2.000000).px;
-        // borderBottomWidth      = (2.000000).px;
-        // borderLeftWidth        = (2.000000).px;
-        // borderTopLeftWidth     = (2.000000).px;
-        // borderTopRightWidth    = (2.000000).px;
-        // borderBottomLeftWidth  = (2.000000).px;
-        // borderBottomRightWidth = (2.000000).px;
+        with ( element.computed )
+        {
+            borderWidth = (2.000000).px;
+            borderStyle = LineStyle.solid;
+            borderColor = Color( 0x0, 0x80, 0x0 );
+            width = (50.000000).px;
+            height = (50.000000).px;
+        }
     }
 }
 
-// intro;
 struct intro
 {
-    Element* element;
-    alias    element this;
-    string   className = "intro";
+    string name = "intro";
     
-    void setter()
+    static
+    void setter( Element* element )
     {
-        // borderTopWidth         = (3.000000).px;
-        // borderRightWidth       = (3.000000).px;
-        // borderBottomWidth      = (3.000000).px;
-        // borderLeftWidth        = (3.000000).px;
-        // borderTopLeftWidth     = (3.000000).px;
-        // borderTopRightWidth    = (3.000000).px;
-        // borderBottomLeftWidth  = (3.000000).px;
-        // borderBottomRightWidth = (3.000000).px;
+        with ( element.computed )
+        {
+            borderWidth = (1.000000).px;
+            borderStyle = LineStyle.solid;
+            borderColor = Color( 0x0, 0xC0, 0x0 );
+            width = (10.000000).px;
+            height = (10.000000).px;
+        }
     }
 }
 

@@ -4,12 +4,13 @@ module generated.tree;
 import ui;
 import generated.style;
 
-void initUI( ref Document document )
+void initUI( Document* document )
 {
   Element* element;
   Element* parentElement;
   
   // body 
+  document.body.addClass!stage;
   
     // e
     element = document.createElement( "e" );
