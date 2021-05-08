@@ -24,6 +24,7 @@ import ui.parse.t.parser           : ParsedClass;
 import ui.parse.t.parser           : StyleSection;
 import ui.parse.t.tokenize         : readColon;
 import ui.parse.t.charreader       : CharReader;
+import ui.parse.t.on               : parse_on;
 import std.string                  : startsWith;
 import std.conv                    : to;
 
@@ -71,10 +72,10 @@ void parseSection_style( R )( ref R range, Tok[] tokenized, size_t indent, Doc* 
             {
                 auto word = tokenized.front.s;
 
-                // event: ...
-                if ( word == "event" )
+                // on: ...
+                if ( word == "on" )
                 {
-                    parse_event( range, tokenized, curElement.evemtCallbacks );
+                    parse_on( range, tokenized, indentLength, curElement.evemtCallbacks );
                 }
                 else
 

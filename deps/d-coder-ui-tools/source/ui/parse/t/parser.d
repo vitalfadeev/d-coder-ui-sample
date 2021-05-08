@@ -27,8 +27,9 @@ struct Doc
 
 struct ParsedClass
 {
-    string   className;
-    string[] setters;
+    string          className;
+    string[]        setters;
+    EventCallback[] evemtCallbacks;
 }
 
 struct StyleSection
@@ -54,19 +55,32 @@ struct ParsedElement
     string           tagName;
     string[]         classes;
     string[]         setters;
-    EvemtCallback[]  evemtCallbacks;
-    //PropList         properties;
+    EventCallback[]  evemtCallbacks;
     ParsedElement*   parent;
     ParsedElement*[] childs;
 }
 
 
-struct EvemtCallback
+struct EventCallback
 {
-    string name; // = "process_KeyboardKeyEvent"
-    string code; // 
+    string   name;      // = "WM_KEYPRESS"
+    Tok[]    args;      // = "VK_SPACE"
+    string[] eventBody; // = [ "  addClass selected" ]
+
     /*
-    void process_KeyboardKeyEvent( Element* element, KeyboardKeyEvent event )
+    static
+    void on( Element* element, Event* event )
+    {
+        // route by event type
+        switch ( event.type )
+        {
+            case WM_KEYDOWN: on_WM_KEYDOWN( element, event ); break;
+            default:
+        }
+    }
+
+    static
+    void on_WM_KEYDOWN( Element* element, Event* event )
     {
         if ( event.code == VK_SPACE )
         {

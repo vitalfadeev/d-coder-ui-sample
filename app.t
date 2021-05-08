@@ -7,7 +7,7 @@ style
     width:  100px
     height: 100px
 
-    event: WM_KEYDOWN VK_SPACE
+    on: WM_KEYDOWN VK_SPACE
       addClass selected
 
   dark
