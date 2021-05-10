@@ -2,12 +2,15 @@ module ui.parse.parser;
 
 import std.stdio;
 import ui.parse.t.parser : Doc;
+import std.range : empty;
+import std.range : front;
 import std.stdio : File;
 import std.file  : exists;
 import std.file  : mkdir;
 import std.path  : buildPath;
 import std.string : stripLeft;
 import std.string : startsWith;
+import ui.parse.t.parser : EventCallback;
 
 // create .def
 // dub build
@@ -140,27 +143,27 @@ void generate_style( Doc* doc )
 
     foreach ( cls; doc.style.classes )
     {
-        s ~= format!"struct %s\n"( cls.className );
-        s ~=        "{\n";
-        s ~= format!"    string name = %s;\n"( cls.className.quote );
-        s ~=        "    \n";
-        s ~=        "    static\n";
-        s ~= format!"    void setter( Element* element )\n";
-        s ~=        "    {\n";
-        s ~=        "        with ( element.computed )\n";
-        s ~=        "        {\n";
-        foreach ( setter; cls.setters )
-        {
-        s ~= format!"            %s\n"( setter );
-        }
-        s ~=        "        }\n";
-        s ~=        "    }\n";
-        s ~=        "    \n";
-        if ( cls.EventCallbacks.length > 0 )
-        s ~= format!"    %s\n"( generate_on( doc, cls.EventCallbacks ) );
-        s ~=        "}\n";
-        s ~=        "\n";
+    s ~= format!"struct %s\n"( cls.className );
+    s ~=        "{\n";
+    s ~= format!"    string name = %s;\n"( cls.className.quote );
+    s ~=        "    \n";
+    s ~=        "    static\n";
+    s ~= format!"    void setter( Element* element )\n";
+    s ~=        "    {\n";
+    s ~=        "        with ( element.computed )\n";
+    s ~=        "        {\n";
+    foreach ( setter; cls.setters )
+    {
+    s ~= format!"            %s\n"( setter );
     }
+    s ~=        "        }\n";
+    s ~=        "    }\n";
+    s ~=        "    \n";
+    if ( cls.eventCallbacks.length > 0 )
+    s ~= format!"%s\n"( generate_on( doc, cls.eventCallbacks ) );
+    s ~=        "}\n";
+    s ~=        "\n";
+    } // foreach doc.style.classes
 
 
     writeln( s );
@@ -210,219 +213,80 @@ void generate_package( Doc* doc )
 }
 
 
-string generate_on( Doc* doc, EventCallback*[] EventCallbacks )
+string generate_on( Doc* doc, ref EventCallback[] eventCallbacks )
 {
     import ui.parse.t.tokenize : Tok;
+    import std.format : format;
 
     string s;
     Tok[] tokenized;
 
-    auto range = eventBody;
-
     // grouped name arg1
-    // on
-    // on WM_KEYDOWN
-    // on WM_KEYDOWN VK_SPACE
-
+    //   on
+    //   on WM_KEYDOWN
+    //   on WM_KEYDOWN VK_SPACE
     alias NAME = string;
     alias ARG1 = string;
 
-    EventCallback*[ ARG1 ][ NAME ] grouped;
-    string[] names; // ordered
-    string[][ name ] args;  // ordered
+    GroupedEventCallbacks grouped;
 
-    foreach ( ecb; eventCallbacks )
+    foreach ( ref cb; eventCallbacks )
     {
-        auto byArg1 = ecb.name in grouped;
-
-        if ( byArg1 !is null )
-        {
-            auto arg1 = ( ecb.args.length > 0 ) ? ecb.args.front : "";
-
-            auto callbacks = arg1 in *byArg1;
-            if ( callbacks !is null )
-            {
-                args[ name ][ arg1 ] = ecb;
-            }
-            else
-
-            {
-                args[ name ] = [ ecb ];
-            }
-        }
-        else
-
-        {
-            names ~= ecb.name;
-        }
+        grouped ~= &cb;
     }
 
-
-    auto grouped = group_event_callbacks( eventCallbacks );
-
+    // on()
+    s ~=        "    static\n";
     s ~=        "    void on( Element* element, Event* event )\n";
     s ~=        "    {\n";
     s ~=        "        switch ( event.type )\n";
     s ~=        "        {\n";
-    foreach( ecb; grouped )
-    s ~= format!"            case %s: on_%s( element, event ); break;\n"( ecb.name, ecb.name );
+    foreach ( eventName; grouped.orderedKeys )
+    s ~= format!"            case %s: on_%s( element, event ); break;\n"( eventName, eventName );
     s ~=        "            default:\n";
     s ~=        "        }\n";
     s ~=        "    }\n";
+    s ~=        "    \n";
+    // end on()
 
-    foreach( ecb; grouped )
+    // on_XXXXXX()
+    foreach ( eventName; grouped.orderedKeys )
     {
-    s ~= format!"    void on_%s( Element* element, Event* event )\n"( ecb.name );
+    s ~=        "    static\n";
+    s ~= format!"    void on_%s( Element* element, Event* event )\n"( eventName );
     s ~=        "    {\n";
-    s ~=        "        with ( element )\n";
-    if ( ecb.nativeCode )
-    s ~=                 nativeCode;
-    else
-    s ~= format!"        %s( %s );\n"( functionName, functionArg.quote );
-    s ~=        "    }\n";
-    }
-
-
-    if ( !range.empty )
-    for ( string line; !range.empty; range.popFront() )
+    auto byArg = grouped.array[ eventName ];
+    foreach ( eventArg; byArg.orderedKeys )
     {
-        line = range.front;
-
-        // Native D-lang code block
-        // {
-        //     addClass( "selected" );
-        // }
-        if ( line.stripLeft().startsWith( "{" ) )
-        {
-            string nativeCode;
-
-            read_code_block( range, nativeCode );
-
-            s ~=        "with ( element )\n";
-            s ~=        nativeCode;
-        }
-        else
-
-        // call function
-        // addClass selected
-        {
-            auto functionName = tokenized.front.s;          // = addClass
-            auto functionArg  = tokenized.drop(1).front.s;  // = selected
-
-            s ~= format!"%s( %s );\n"( functionName, functionArg.quote );
-        }
+    auto byArgGroup = byArg.array[ eventArg ];
+    foreach ( ecb; byArgGroup )
+    {
+    if ( eventArg == "" )
+    {
+    s ~=        "        with ( element )\n";
+    s ~=        "        {\n";
+    s ~=        generate_event_code( "        ", ecb );
+    s ~=        "            return;\n";
+    s ~=        "        }\n";
+    s ~=        "        \n";
     }
+    else
+    {
+    s ~= format!"        if ( event.arg1 == %s )\n"( eventArg );
+    s ~=        "        with ( element )\n";
+    s ~=        "        {\n";
+    s ~=        generate_event_code( "            ", ecb );
+    s ~=        "            return;\n";
+    s ~=        "        }\n";
+    } //       if eventArg
+    } //     foreach byArgGroup
+    } //   foreach eventArg
+    s ~=        "    }\n";
+    s ~=        "    \n";
+    } // foreach eventName
+    // end on_XXXXXX()
 
     return s;
-}
-
-
-bool read_code_block( R )( R range, ref string nativeCode )
-{
-    import ui.parse.t.tokenize : readIndent;
-    import ui.parse.t.charreader : CharReader;
-
-    size_t startIndentLength;
-    size_t indentLength;
-
-    readIndent( new CharReader( range.front ), &startIndentLength );
-
-    if ( !range.empty )
-    for ( string line; !range.empty; range.popFront() )
-    {
-        line = range.front;
-
-        auto charReader = new CharReader( line );
-        readIndent( charReader, &indentLength );
-
-        // add line
-        nativeCode ~= format!"        %s\n"( line );
-
-        if ( indentLength == startIndentLength )
-        if ( charReader.front == "}" )
-        {
-            return true; // OK
-        }
-    }
-
-    return false;
-}
-
-EventCallback*[] group_event_callbacks( EventCallback*[] eventCallbacks )
-{
-    // on
-    //   WM_KEYDOWN 
-    //     VK_SPACE
-    //     VK_ESCAPE
-    //   WM_KEYUP
-    //     VK_SPACE
-    //     VK_ESCAPE
-
-    EventCallback*[] grouped;
-    grouped.reserve( eventCallbacks.length );
-
-    bool hasGroup1( EventCallback* cb )
-    {
-        foreach ( g; grouped )
-        {
-            if ( g.name == cb.name )
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    bool hasGroup2( EventCallback* cb )
-    {
-        foreach ( g; grouped )
-        {
-            if ( g.args.front == cb.args.front )
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    void insertAfterGroup1( EventCallback* cb )
-    {
-        import std.algorithm.searching : countUntil;
-
-        auto posStart = grouped.countUntil!( a => a.name == cb.name )();
-        auto posEnd   = grouped[ posStart .. $ ].countUntil!( a => a.name != cb.name )();
-
-        // move
-        grouped[ posEnd + 1 .. $ ] = grouped[ posEnd .. $-1 ];
-        // set
-        grouped[ posEnd ] = cb;
-    }
-
-    void insertAfterGroup1and2( EventCallback* cb )
-    {
-        import std.algorithm.searching : countUntil;
-
-        auto posStart = grouped.countUntil!( a => a.name == cb.name && a.args.front == cb.args.front )();
-        auto posEnd   = grouped[ posStart .. $ ].countUntil!( a => a.name != cb.name && a.args.front == cb.args.front )();
-
-        // move
-        grouped[ posEnd + 1 .. $ ] = grouped[ posEnd .. $-1 ];
-        // set
-        grouped[ posEnd ] = cb;
-    }
-
-    //
-    foreach ( cb; eventCallbacks )
-    {
-        if ( hasGroup1( cb ) )
-        {
-            //
-        }
-    }
-
-    return grouped;
 }
 
 
@@ -488,14 +352,118 @@ struct GroupedOrderedAssocArray( T, alias keyFunc )
     {
         foreach ( key; orderedKeys )
         {
+            writeln( "  ", !key.empty ? key : "." );
             auto group = array[ key ];
 
             foreach ( x; group )
             {
-                // writeln( *x );
+                writeln( "    ", *x );
             }
         }
     }
 }
 
-alias GroupedOrderedAssocArray!( EventCallback*, b => b.name ) groupedEventCallbacks;
+
+alias GroupedOrderedAssocArray!( EventCallback*, b => b.arg1  ) ByArg1;
+
+struct GroupedEventCallbacks
+{
+    string[] orderedKeys;
+    ByArg1[ string ] array; // by Name
+
+    void opOpAssign( string op : "~" )( EventCallback* b )
+    {
+        auto key = keyFunc( b );
+        
+        auto group = key in array;
+
+        if ( group !is null )
+        {
+            *group ~= b;
+        }
+        else
+
+        {
+            orderedKeys ~= key;
+            auto byArg = ByArg1();
+            byArg ~= b;
+            array[ key ] = byArg;
+        }
+    }
+
+    // get name
+    auto keyFunc( TB )( TB b )
+    {
+        return b.name;
+    }
+
+
+    void each()
+    {
+        foreach ( key; orderedKeys )
+        {
+            writeln( key );
+            auto byArg = array[ key ];
+            byArg.each();
+        }
+    }
+}
+
+
+string generate_event_code( string indent, EventCallback* ecb )
+{
+    import std.format : format;
+
+    string s;
+
+    if ( isNativeCode( ecb ) )
+    s ~=        generate_native_code( ecb, indent );
+    else
+    s ~=        generate_meta_code( ecb, indent );
+
+    return s;
+}
+
+
+bool isNativeCode( EventCallback* ecb )
+{
+    import std.range  : empty;
+    import std.range  : front;
+    import std.string : stripLeft;
+    import std.string : startsWith;
+
+    return !ecb.eventBody.empty && ecb.eventBody.front.stripLeft.startsWith( "{" );
+}
+
+auto generate_native_code( EventCallback* ecb, string indent )
+{
+    import std.range  : front;
+    import std.string : indexOf;
+
+    string s;
+
+    size_t blockIndent = ecb.eventBody.front.indexOf( "{" );
+
+    foreach ( line; ecb.eventBody )
+    {
+        // remove indent for beauty code
+        s ~= indent ~ line[ blockIndent .. $ ] ~ "\n";
+    }
+
+    return s;
+}
+
+auto generate_meta_code( EventCallback* ecb, string indent )
+{
+    import std.format : format;
+
+    string s;
+
+    foreach ( line; ecb.eventBody )
+    {
+        s ~= format!"%s%s( %s );\n"( indent, "functionName", "functionArg.quote" );
+    }
+
+    return s;
+}
+

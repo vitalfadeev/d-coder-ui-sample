@@ -13,7 +13,8 @@
     },
     "preGenerateCommands":
     [
-        "start /wait deps/d-coder-ui-tools/bin/t-convertor.exe"
+         "rmgenerated.bat",
+         "start /wait deps/d-coder-ui-tools/bin/t-convertor.exe"
     ],
     "dflags"      : [ "-mixin=mixins.d" ]
  }
