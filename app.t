@@ -8,14 +8,10 @@ style
     height: 100px
 
     on: WM_KEYDOWN VK_SPACE
-      {
-        addClass!selected();
-      }
+        ~selected
 
     on: WM_LBUTTONDOWN
-      {
-        toggleClass!selected();
-      }
+        ~selected
 
   dark
     border: 2px solid #008

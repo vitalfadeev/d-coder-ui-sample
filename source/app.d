@@ -8,22 +8,20 @@ bool doLoop = true;
 
 void main()
 {
-    initUI();
+    UI();
     eventLoop();
 }
 
 
-void initUI()
+void UI()
 {
-    import generated;
+    import generated : initUI;
 
     auto document = new Document;
 
-    generated.initUI( document );
+    initUI( document );
 
-    auto window = new MyWindow( 640, 480 );
-
-    window.document = document;
+    auto window = new MyWindow( document );
 }
 
 
@@ -52,9 +50,9 @@ void exit()
 /** */
 class MyWindow : OSWindow
 {
-    this( int cd, int gh )
+    this( Document* document )
     {
-        super( cd, gh );
+        super( document );
     }
 }
 
