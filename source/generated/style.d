@@ -37,9 +37,8 @@ struct stage
         if ( event.arg1 == VK_SPACE )
         with ( element )
         {
-            {
-              addClass!selected();
-            }
+            //     on: WM_KEYDOWN VK_SPACE
+            toggleClass( "selected" );
             return;
         }
     }
@@ -49,9 +48,8 @@ struct stage
     {
         with ( element )
         {
-        {
-          toggleClass!selected();
-        }
+            //     on: WM_LBUTTONDOWN
+            toggleClass( "selected" );
             return;
         }
         
@@ -115,3 +113,11 @@ struct selected
     
 }
 
+static
+this()
+{
+    registerClass!stage();
+    registerClass!dark();
+    registerClass!intro();
+    registerClass!selected();
+}

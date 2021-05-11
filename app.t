@@ -6,6 +6,7 @@ style
     border: 3px solid #003
     width:  100px
     height: 100px
+    margin-left: 100px
 
     on: WM_KEYDOWN VK_SPACE
         ~selected

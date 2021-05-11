@@ -7,14 +7,14 @@
     "targetPath"  : "bin",
     "targetName"  : "d-coder-ui-sample",
     "targetType"  : "executable",
+    "dflags"      : [ "-mixin=mixins.d" ],
     "dependencies":
     {
         "d-coder-ui" : { "path" : "deps/d-coder-ui" }
     },
     "preGenerateCommands":
     [
-         "rmgenerated.bat",
+         "start /wait cmd /C IF EXIST source\\generated rmdir /q /s source\\generated",
          "start /wait deps/d-coder-ui-tools/bin/t-convertor.exe"
-    ],
-    "dflags"      : [ "-mixin=mixins.d" ]
+    ]
  }
