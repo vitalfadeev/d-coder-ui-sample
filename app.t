@@ -2,6 +2,12 @@ head
   title: New window
 
 style
+  body
+    border: 3px solid #003
+    width:  50px
+    height: 100px
+    display: grid
+
   stage
     border: 3px solid #003
     width:  100px
@@ -27,7 +33,7 @@ style
   selected
     border: 1px solid #0C0
 
-body stage
+body body
   e stage dark
   e stage intro
 

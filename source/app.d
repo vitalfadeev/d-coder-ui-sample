@@ -1,40 +1,41 @@
 import std.stdio;
 import ui;
-import ui.oswindow : OSWindow;
-
-
-bool doLoop = true;
+import uiapp : App;
 
 
 void main()
 {
-    UI();
-    eventLoop();
+    App app;
+    app.init_();
+    app.UI();
+    addControl( app.window.document );
+    app.eventLoop();
 }
 
-
-void UI()
+void addControl( Document* document )
 {
-    import generated : initUI;
+    Element* element;
+  
+    element = document.createElement();
+    document.body.appendChild( element );
 
-    auto document = new Document;
+    //
+    element.instanceClass.setter = 
+        ( Element* element )
+        {
+            with ( element.computed )
+            {
+                marginRight =   10;
+                marginTop   =   10;
+                width       =  100;
+                height      =  200;
+                magnetRight = -100;
+                magnetTop   = -100;
 
-    initUI( document );
-
-    auto window = new OSWindow( document );
+                borderWidth = (3.000000).px;
+                borderStyle = LineStyle.solid;
+                borderColor = Color( 0x30, 0x00, 0x30 );
+            }
+        };
 }
 
-
-/** */
-void eventLoop()
-{
-    import core.sys.windows.windows;
-
-    MSG msg;
-
-   while ( doLoop && GetMessage( &msg, NULL, 0, 0 ) )
-   {
-       //TranslateMessage( &msg );
-       DispatchMessage( &msg );
-   }
-}

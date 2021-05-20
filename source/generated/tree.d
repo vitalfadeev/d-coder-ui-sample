@@ -10,7 +10,7 @@ void initUI( Document* document )
   Element* parentElement;
   
   // body 
-  document.body.addClass!stage;
+  document.body.addClass!body;
   
     // e
     element = document.createElement( "e" );

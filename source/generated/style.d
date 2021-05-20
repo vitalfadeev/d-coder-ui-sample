@@ -3,6 +3,25 @@ module generated.style;
 
 import ui;
 
+struct body
+{
+    string name = "body";
+    
+    static
+    void setter( Element* element )
+    {
+        with ( element.computed )
+        {
+            borderWidth = (3.000000).px;
+            borderStyle = LineStyle.solid;
+            borderColor = Color( 0x0, 0x0, 0x30 );
+            width       = (50.000000).px;
+            height      = (100.000000).px;
+        }
+    }
+    
+}
+
 struct stage
 {
     string name = "stage";
@@ -15,8 +34,9 @@ struct stage
             borderWidth = (3.000000).px;
             borderStyle = LineStyle.solid;
             borderColor = Color( 0x0, 0x0, 0x30 );
-            width = (100.000000).px;
-            height = (100.000000).px;
+            width       = (100.000000).px;
+            height      = (100.000000).px;
+            marginLeft  = (100).px;
         }
     }
     
@@ -38,7 +58,7 @@ struct stage
         with ( element )
         {
             //     on: WM_KEYDOWN VK_SPACE
-            toggleClass( "selected" );
+            toggleClass!selected();
             return;
         }
     }
@@ -49,7 +69,7 @@ struct stage
         with ( element )
         {
             //     on: WM_LBUTTONDOWN
-            toggleClass( "selected" );
+            toggleClass!selected();
             return;
         }
         
@@ -70,8 +90,8 @@ struct dark
             borderWidth = (2.000000).px;
             borderStyle = LineStyle.solid;
             borderColor = Color( 0x0, 0x0, 0x80 );
-            width = (50.000000).px;
-            height = (50.000000).px;
+            width       = (50.000000).px;
+            height      = (50.000000).px;
         }
     }
     
@@ -89,8 +109,8 @@ struct intro
             borderWidth = (1.000000).px;
             borderStyle = LineStyle.solid;
             borderColor = Color( 0x0, 0x0, 0xC0 );
-            width = (10.000000).px;
-            height = (10.000000).px;
+            width       = (10.000000).px;
+            height      = (10.000000).px;
         }
     }
     
@@ -116,6 +136,7 @@ struct selected
 static
 this()
 {
+    registerClass!body();
     registerClass!stage();
     registerClass!dark();
     registerClass!intro();
