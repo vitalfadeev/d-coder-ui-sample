@@ -1,4 +1,5 @@
 .dub
+dub.selections.json
 docs.json
 __dummy.html
 docs/
@@ -9,6 +10,7 @@ d-coder-ui-sample.dll
 d-coder-ui-sample.a
 d-coder-ui-sample.lib
 d-coder-ui-sample-test-*
+bin/*
 *.exe
 *.o
 *.obj

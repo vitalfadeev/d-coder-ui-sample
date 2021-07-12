@@ -11,6 +11,9 @@ void initUI( Document* document )
   
   // body 
   document.body.addClass!body;
+  document.body.display = Display.window;
+  document.body.width = 800.px;
+  document.body.height = 600.px;
   
     // e
     element = document.createElement( "e" );

@@ -13,9 +13,29 @@
     {
         "d-coder-ui" : { "path" : "deps/d-coder-ui" }
     },
-    "preGenerateCommands":
+    "configurations": 
     [
-         "start /wait /min cmd /C IF EXIST source\\generated rmdir /q /s source\\generated",
-         "start /wait /min deps/d-coder-ui-tools/bin/t-convertor.exe"
+        {
+            "name"        : "windows",
+            "platforms"   : ["windows"],
+            "preGenerateCommands":
+            [
+                 "start /wait /min cmd /C IF EXIST source\\generated rmdir /q /s source\\generated",
+                 "start /wait /min deps/d-coder-ui-tools/bin/t-convertor.exe"
+            ]
+        },
+        {
+            "name"              : "linux",
+            "platforms"         : ["linux"],
+            "versions"          : [ "GLFW" ],
+            "subConfigurations" : 
+            {
+                "d-coder-ui": "linux"
+            },
+            "preGenerateCommands":
+            [
+            ]
+        }
     ]
+
  }

@@ -10,8 +10,9 @@ struct body
     static
     void setter( Element* element )
     {
-        with ( element.computed )
+        with ( element )
         {
+            display     = Display.window;
             borderWidth = (3.000000).px;
             borderStyle = LineStyle.solid;
             borderColor = Color( 0x0, 0x0, 0x30 );
@@ -29,7 +30,7 @@ struct stage
     static
     void setter( Element* element )
     {
-        with ( element.computed )
+        with ( element )
         {
             borderWidth = (3.000000).px;
             borderStyle = LineStyle.solid;
@@ -85,7 +86,7 @@ struct dark
     static
     void setter( Element* element )
     {
-        with ( element.computed )
+        with ( element )
         {
             borderWidth = (2.000000).px;
             borderStyle = LineStyle.solid;
@@ -123,7 +124,7 @@ struct selected
     static
     void setter( Element* element )
     {
-        with ( element.computed )
+        with ( element )
         {
             borderWidth = (1.000000).px;
             borderStyle = LineStyle.solid;
